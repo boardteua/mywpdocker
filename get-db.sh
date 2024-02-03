@@ -1,9 +1,9 @@
 #!/bin/bash
 
 SERVER="$1"
-SSH_KEY="~/.ssh/$3"
+SSH_KEY="~/.ssh/$2"
 
-FOLDER="$1"
+FOLDER="$3"
 EXPORT_SCRIPT="wp-export.sh"
 IMPORT_SCRIPT="wp-import.sh"
 DUMP_FOLDER="dump"
