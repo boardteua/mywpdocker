@@ -10,6 +10,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.repository != 'boardteua/mywpdocker'
     permissions: write-all
     steps:
     - uses: actions/checkout@v2
