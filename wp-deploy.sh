@@ -1,6 +1,6 @@
 #!/bin/bash
-ssh_="ubuntu@0.0.0.0"
-key_path="~/.ssh/deploy"
+ssh_="$1"
+key_path="~/.ssh/$2"
 git_=$(git config --get remote.origin.url)
 rname=$(basename `git rev-parse --show-toplevel`)
 
