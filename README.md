@@ -40,7 +40,7 @@ To get your WordPress installation running follow these simple steps.
 
 1. Create new repo from this template
 ![image](https://user-images.githubusercontent.com/67096472/208317268-896a490c-94ea-44e6-85f4-c17429246aff.png)
-2. Add DEPLOY_KEY (private ssh key), DEPLOY_USERNAME, HOST_IP, SSH_HOST to git secret (Find 'WP Docker ENV' base in our onepassword )
+2. Add DEPLOY_KEY (private ssh key), DEPLOY_USERNAME, HOST_IP, SSH_HOST to git secret
 3. Clone your repo
 4. Go into the created repo folder 
    ```cd ./%your_repo%```
@@ -64,7 +64,7 @@ To get your WordPress installation running follow these simple steps.
 
 #### (Deploy to server)
  
-1. Run ```sh wp-deploy.sh``` onetime, to pull project
+1. Run ```sh wp-deploy.sh user@ip sshKey``` onetime, to pull project
 2. Make first commit to repo and push to main
 
 ### Uninstall
