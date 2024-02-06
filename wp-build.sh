@@ -1,3 +1,3 @@
 #!/usr/bin/sh
 
-docker-compose up -d --build mysql phpmyadmin wordpress
+docker compose up -d --build mysql phpmyadmin wordpress

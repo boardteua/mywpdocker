@@ -1,77 +1,72 @@
 name: Dev deployment
-
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+ pull_request:
+  branches:
+   - main
+
+ # Allows you to run this workflow manually from the Actions tab
+ workflow_dispatch:
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    if: github.repository != 'boardteua/mywpdocker'
-    permissions: write-all
-    steps:
-    - uses: actions/checkout@v2
-   
-  # Add auto tag      
-    - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@v1     
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        WITH_V: true 
-  # Add node
-    - name: Setup Node
-      uses: actions/setup-node@v3
-      with:
-        version: 18
-    # Synch WP      
-    - name: Sync WP
-      env:
-        dest: '${{secrets.DEPLOY_USERNAME}}@${{secrets.HOST_IP}}:${{ github.event.repository.name }}/wp_data/wp-content/'
-      run: |
-        echo "${{secrets.DEPLOY_KEY}}" > deploy_key
-        chmod 600 ./deploy_key
-        rsync -chav --delete \
-          -O \
-          --no-perms \
-          -avzt --delete \
-          --chown=ubuntu:www-data --chmod=Dg=rwx,Fg=rwx \
-          -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
-          --exclude /deploy_key \
-          --exclude /.git/ \
-          --exclude /.github/ \
-          --exclude /cache/ \
-          --exclude /uploads/ \
-          ./wp_data/wp-content/ ${{env.dest}}
-    # Update Database (With 'Update DB' commit)     
-    - name: Checkout Database
-      if: "contains(github.event.head_commit.message, 'Update DB')"
-      env:
-        dest: '${{secrets.DEPLOY_USERNAME}}@${{secrets.HOST_IP}}:${{ github.event.repository.name }}/dump/'
-      run: |
-        echo "${{secrets.DEPLOY_KEY}}" > deploy_key
-        chmod 600 ./deploy_key
-        rsync -chav --delete \
-          -O \
-          --ignore-errors\
-          --no-perms \
-          --chown=${{ secrets.DEPLOY_USERNAME }}:www-data --chmod=Dg=rwx,Fg=rwx \
-          -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
-          --exclude /deploy_key \
-          --exclude /.git/ \
-          --exclude /.github/ \
-          --exclude /uploads/ \
-          ./dump/ ${{env.dest}} 
-    - name: Import DB
-      uses: appleboy/ssh-action@v0.1.6
-      if: "contains(github.event.head_commit.message, 'Update DB')"
-      with:
-          host: ${{ secrets.HOST_IP }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          username: ${{ secrets.DEPLOY_USERNAME}}
-          port: 22
-          script: | 
-            cd ${{ github.event.repository.name }}
-            docker-compose run --rm wp-cli sh -c 'sh /usr/local/bin/import-wp' 
+ deploy:
+  runs-on: ubuntu-latest
+  if: github.repository != 'boardteua/mywpdocker'
+  permissions: write-all
+  steps:
+   - uses: actions/checkout@v2
+
+   # Add auto tag
+   - name: Bump version and push tag
+     uses: anothrNick/github-tag-action@v1
+     env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      WITH_V: true
+   # Synch WP
+   - name: Sync WP
+     env:
+      dest: "${{secrets.DEPLOY_USERNAME}}@${{secrets.HOST_IP}}:${{ github.event.repository.name }}/wp_data/wp-content/"
+     run: |
+      echo "${{secrets.DEPLOY_KEY}}" > deploy_key
+      chmod 600 ./deploy_key
+      rsync -chav --delete \
+        -O \
+        --no-perms \
+        -avzt --delete \
+        --chown=ubuntu:www-data --chmod=Dg=rwx,Fg=rwx \
+        -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
+        --exclude /deploy_key \
+        --exclude /.git/ \
+        --exclude /.github/ \
+        --exclude /uploads/elementor/css \
+        --exclude /cache/ \
+        ./wp_data/wp-content/ ${{env.dest}}
+   # Update Database (With 'Update DB' commit)
+   - name: Checkout Database
+     if: "contains(github.event.head_commit.message, 'Update DB')"
+     env:
+      dest: "${{secrets.DEPLOY_USERNAME}}@${{secrets.HOST_IP}}:${{ github.event.repository.name }}/dump/"
+     run: |
+      echo "${{secrets.DEPLOY_KEY}}" > deploy_key
+      chmod 600 ./deploy_key
+      rsync -chav --delete \
+        -O \
+        --ignore-errors\
+        --no-perms \
+        -avzt --delete \
+        --chown=ubuntu:www-data --chmod=Dg=rwx,Fg=rwx \
+        -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
+        --exclude /deploy_key \
+        --exclude /.git/ \
+        --exclude /uploads/elementor/css \
+        --exclude /.github/ \
+        ./dump/ ${{env.dest}}
+   - name: Import DB
+     uses: appleboy/ssh-action@v0.1.6
+     if: "contains(github.event.head_commit.message, 'Update DB')"
+     with:
+      host: ${{ secrets.HOST_IP }}
+      key: ${{ secrets.DEPLOY_KEY }}
+      username: ${{ secrets.DEPLOY_USERNAME}}
+      port: 22
+      script: |
+       cd ${{ github.event.repository.name }}
+       docker compose run --rm wp-cli sh -c 'sh /usr/local/bin/import-wp'

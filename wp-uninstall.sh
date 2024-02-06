@@ -37,4 +37,4 @@ while [ "$1" != "" ]; do
     shift
 done
 
-docker-compose down $REMOVE_VOLUMES $REMOVE_IMAGES
+docker compose down $REMOVE_VOLUMES $REMOVE_IMAGES

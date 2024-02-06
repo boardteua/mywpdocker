@@ -13,7 +13,7 @@ then
 else
   echo "Importing DB dump ..."
   wp db import dump/dump.sql
-  wp search-replace 'http://localhost' ${WP_URL} --skip-columns=guid
+  wp search-replace ${WP_URL}.loc ${WP_URL} --skip-columns=guid
   # wp option update siteurl ${WP_URL}
   # wp option update home ${WP_URL}
   wp db check

@@ -50,7 +50,7 @@ if [ $dnsrecordid = "null" ]
 then
   newrecord=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$zoneid/dns_records" \
   -H "X-Auth-Email: $cloudflare_auth_email" \
-	  -H "Authorization: Bearer $cloudflare_auth_key" \
+	-H "Authorization: Bearer $cloudflare_auth_key" \
   -H "Content-Type: application/json" \
   --data "{\"type\":\"A\",\"comment\":\"Added from server\",\"name\":\"$dnsrecord\",\"content\":\"$cloudflare_a_ip\",\"ttl\":1,\"proxied\":true}" | jq -r '{"result"}[] | .[0] | .id')
 else

@@ -6,4 +6,4 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
-docker-compose run --rm wp-cli $1
+docker compose run --rm wp-cli $1

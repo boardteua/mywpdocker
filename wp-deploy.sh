@@ -8,7 +8,7 @@ echo 'no "-o IdentitiesOnly=yes"'
 echo $git_
 echo $rname
 
-ssh -i ${key_path} ${ssh_} "git -c 'core.sshCommand=ssh -i ~/.ssh/git' clone ${git_}"
+ssh -i ${key_path} ${ssh_} "git -c 'core.sshCommand=ssh -i ~/.ssh/id_rsa' clone ${git_}"
 
 scp -i ${key_path} .env ${ssh_}:~/${rname}/.env
 ssh -i ${key_path} ${ssh_} "export RNAME=${rname}; bash ${rname}/bin/deploy-wp.sh"
