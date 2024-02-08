@@ -11,4 +11,6 @@ COPY ./entrypoint.sh /var/www/html
 RUN chmod +x /var/www/html/entrypoint.sh
 RUN chmod 775 /var/www/html/entrypoint.sh
 
+COPY ./configuration/custom.ini $PHP_INI_DIR/conf.d/
+
 CMD ["apache2-foreground"]
